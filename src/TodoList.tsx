@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, {FC, useRef} from "react";
 import {FilterValuesType} from "./App";
 
 type TodoListPropsType = {
@@ -6,6 +6,7 @@ type TodoListPropsType = {
     tasks: Array<TaskType>
     removeTask: (taskId: string) => void
     changeFilter: (nextFilterValue: FilterValuesType) => void
+    addTask: (title: string) => void
 }
 
 export type TaskType = {
@@ -15,38 +16,16 @@ export type TaskType = {
 }
 
 const TodoList: FC<TodoListPropsType> = (
-    // 3
+
     {
         title,
         tasks,
         removeTask,
-        changeFilter
+        changeFilter,
+        addTask
     }) => {
-    // 1
-    // const title = props.title
-    // const tasks = props.tasks
-    // 2
-    // const {title, tasks} = props
 
-
-    // let tasksList: Array<JSX.Element> | JSX.Element
-    // if (tasks.length === 0) {
-    //     tasksList = <span>Your tasks List is empty</span>
-    // } else {
-    //     const listItems: Array<JSX.Element> = []
-    //     for (let i = 0; i < tasks.length; i++) {
-    //         const newListItem = <li>
-    //             <input type="checkbox" checked={tasks[i].isDone}/>
-    //             <span>{tasks[i].title}</span>
-    //             <button>x</button>
-    //         </li>
-    //         listItems.push(newListItem)
-    //     }
-    //     tasksList = <ul>
-    //         {listItems}
-    //     </ul>
-    // }
-
+    const titleInput = useRef<HTMLInputElement>(null)
     const listItems: Array<JSX.Element> = tasks.map(t => {
         const onClickRemoveTaskHandler = () => removeTask(t.id)
         return (
@@ -57,8 +36,6 @@ const TodoList: FC<TodoListPropsType> = (
             </li>
         )
     })
-
-
     const tasksList: Array<JSX.Element> | JSX.Element = tasks.length
         ? <ul> {listItems} </ul>
         : <span>Your tasks List is empty</span>
@@ -66,8 +43,13 @@ const TodoList: FC<TodoListPropsType> = (
         <div className="todolist">
             <h3>{title}</h3>
             <div>
-                <input/>
-                <button>+</button>
+                <input ref={titleInput}/>
+                <button onClick={()=> {
+                    if(titleInput.current !== null) {
+                        addTask(titleInput.current.value)
+                        titleInput.current.value = ""
+                    }
+                }}>+</button>
             </div>
             {tasksList}
             <div>
